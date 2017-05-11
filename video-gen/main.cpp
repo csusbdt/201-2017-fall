@@ -1,10 +1,11 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <sys/stat.h>
 
 using namespace std;
 
-const char * dirname = "./temp/";
+const char * dirname = "./temp";
 const int w = 72;
 const int h = 48;
 
@@ -35,9 +36,15 @@ int main(int argc, char * argv[]) {
 	}
 	int duration = stoi(argv[1]);
 
+	struct stat st;
+	if(stat(dirname, &st) != 0) {
+		cout << "Directory not found: " << dirname << endl;
+		return 1;
+	}
+
 	for (int i = 0; i < duration; ++i) {
 		stringstream outfilename;
-		outfilename << dirname << i << ".raw";
+		outfilename << dirname << "/" << i << ".raw";
 
 		paintRect(0xff, 0x00, 0x00, 20, 10, 50, 48);
 
