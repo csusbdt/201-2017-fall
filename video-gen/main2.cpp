@@ -10,8 +10,8 @@ https://batchloaf.wordpress.com/2017/02/12/a-simple-way-to-read-and-write-audio-
 
 using namespace std;
 
-const int W = 72;
-const int H = 48;
+const int W = 720;
+const int H = 480;
 
 unsigned char frame[H][W][3] = { 0 };
 
@@ -56,17 +56,19 @@ int main(int argc, char * argv[]) {
         cmd << "-hide_banner "     ;
         cmd << "-f rawvideo "      ;
         cmd << "-pix_fmt rgb24 "   ;
-        cmd << "-s:v 72x48 "       ;
-        cmd << "-r 25 "            ;
+        cmd << "-s:v 720x480 "     ;
+        cmd << "-r 60 "            ;
         cmd << "-i - "             ;
-        cmd << "-pix_fmt yuv420p " ;
-        cmd << "-vcodec h264 "     ;
+        cmd << "-pix_fmt yuv420p " ;  // to render with Quicktime
+        cmd << "-vcodec mpeg4 "    ;
+        cmd << "-an "              ;  // no audio
+        cmd << "-q:v 5 "           ;  // quality level; 1 <= q <= 32
         cmd << "output.mp4"        ;
 
 	FILE * pipe = popen(cmd.str().c_str(), "w");
 
 	for (int i = 0; i < duration; ++i) {
-		paintRect(0 + 1 * i, 0 + 1 * i, 20 + 1 * i, 10 + 1 * i, 0xff, 0xff, 0xff);
+		paintRect(0 + 10 * i, 0 + 5 * i, 20 + 10 * i, 10 + 5 * i, 0xff, 0xff, 0xff);
 		fwrite(frame, 3, H*W, pipe);
 		resetFrame();
 	}
