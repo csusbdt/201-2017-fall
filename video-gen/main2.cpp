@@ -10,35 +10,35 @@ https://batchloaf.wordpress.com/2017/02/12/a-simple-way-to-read-and-write-audio-
 
 using namespace std;
 
-const int w = 720;
-const int h = 480;
+const int W = 72;
+const int H = 48;
 
-unsigned char frame[w][h][3] = { 0 };
+unsigned char frame[H][W][3] = { 0 };
 
 void resetFrame() {
-	for (int i = 0; i < w; ++i) {
-		for (int j = 0; j < h; ++j) {
-			frame[i][j][0] = 0;
-			frame[i][j][1] = 0;
-			frame[i][j][2] = 0;
+	for (int y = 0; y < H; ++y) {
+		for (int x = 0; x < W; ++x) {
+			frame[y][x][0] = 0;
+			frame[y][x][1] = 0;
+			frame[y][x][2] = 0;
 		}
 	}
 }
 
 void paintRect(	
-	int i0, 
-	int j0, 
-	int i1, 
-	int j1,
+	int x0, 
+	int y0, 
+	int x1, 
+	int y1,
 	unsigned char r, 
 	unsigned char g, 
 	unsigned char b
 ){
-	for (int i = i0; i < i1; ++i) {
-		for (int j = j0; j < j1; ++j) {
-			frame[i][j][0] = r;
-			frame[i][j][1] = g;
-			frame[i][j][2] = b;
+	for (int y = y0; y < y1; ++y) {
+		for (int x = x0; x < x1; ++x) {
+			frame[y][x][0] = r;
+			frame[y][x][1] = g;
+			frame[y][x][2] = b;
 		}
 	}
 }
@@ -53,24 +53,21 @@ int main(int argc, char * argv[]) {
 	stringstream cmd;
 	cmd << "ffmpeg "           ;
         cmd << "-y "               ;
+        cmd << "-hide_banner "     ;
         cmd << "-f rawvideo "      ;
-        cmd << "-vcodec rawvideo " ;
         cmd << "-pix_fmt rgb24 "   ;
-        cmd << "-s 720x480 "       ;
+        cmd << "-s:v 72x48 "       ;
         cmd << "-r 25 "            ;
         cmd << "-i - "             ;
-        cmd << "-f mp4 "           ;
-        //cmd << "-q:v 5 "           ;
-        cmd << "-an "              ;
-        //cmd << "-vcodec mpeg4 "    ;
-        cmd << "-vcodec h264 "    ;
+        cmd << "-pix_fmt yuv420p " ;
+        cmd << "-vcodec h264 "     ;
         cmd << "output.mp4"        ;
 
 	FILE * pipe = popen(cmd.str().c_str(), "w");
 
 	for (int i = 0; i < duration; ++i) {
-		paintRect(20, 10, 50, 48, 0xff, 0x00, 0x00);
-		fwrite(frame, 1, h*w*3, pipe);
+		paintRect(0 + 1 * i, 0 + 1 * i, 20 + 1 * i, 10 + 1 * i, 0xff, 0xff, 0xff);
+		fwrite(frame, 3, H*W, pipe);
 		resetFrame();
 	}
 

@@ -1,4 +1,4 @@
 c++ main2.cpp || exit
-./a.out 3
+./a.out 50
 rm -f a.out
 
