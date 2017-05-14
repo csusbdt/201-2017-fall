@@ -2,3 +2,5 @@ a.out
 *.wav
 *.mov
 *.mp4
+.DS_Store
+

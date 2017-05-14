@@ -68,7 +68,7 @@ int main(int argc, char * argv[]) {
 	FILE * pipe = popen(cmd.str().c_str(), "w");
 
 	for (int i = 0; i < duration; ++i) {
-		paintRect(0 + 10 * i, 0 + 5 * i, 20 + 10 * i, 10 + 5 * i, 0xff, 0xff, 0xff);
+		paintRect(0 + 10 * i, 0 + 15 * i, 20 + 10 * i, 10 + 15 * i, 0x00, 0xff, 0x00);
 		fwrite(frame, 3, H*W, pipe);
 		resetFrame();
 	}
