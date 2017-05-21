@@ -10,7 +10,7 @@ run : a.out
 	./a.out 50
 	open output.mp4
 
-docs : *.cpp *.h 
+html : *.cpp *.h 
 	/Applications/Doxygen.app/Contents/Resources/doxygen
-
+	open html/index.html
 

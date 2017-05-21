@@ -3,5 +3,5 @@ a.out
 *.mov
 *.mp4
 .DS_Store
-/video-gen-2/docs
+/video-gen-2/html
 
