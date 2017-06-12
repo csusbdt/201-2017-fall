@@ -26,8 +26,8 @@ void clear_frame() { memset(frame, 1, sizeof(frame)); }
 void draw_rect(int x, int y, int w, int h, byte r, byte g, byte b);
 
 void draw_frame(double t) {
-	const double pps = 50; // pixels per second
 	clear_frame();
+	const double pps = 50; // pixels per second
 	draw_rect(0 + t * pps, 0 + t * pps, 10, 10, 0x00, 0xff, 0x00);
 }
 
