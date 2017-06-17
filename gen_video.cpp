@@ -18,7 +18,7 @@ using namespace std;
 #define H 480
 
 const double frames_per_second = 30;
-const int duration_in_seconds = 15;
+const int duration_in_seconds = 3;
 
 unsigned char frame[H][W][3];
 
@@ -27,8 +27,8 @@ void draw_rect(int x, int y, int w, int h, byte r, byte g, byte b);
 
 void draw_frame(double t) {
 	clear_frame();
-	const double pps = 50; // pixels per second
-	draw_rect(0 + t * pps, 0 + t * pps, 10, 10, 0x00, 0xff, 0x00);
+	const double pps = 120; // pixels per second
+	draw_rect(0 + t * pps, 0 + t * pps, 20, 10, 0x00, 0xff, 0x00);
 }
 
 // Constrain point to frame.
@@ -54,22 +54,22 @@ void draw_rect(int x, int y, int w, int h, byte r, byte g, byte b) {
 }
 
 int main(int argc, char * argv[]) {
-	stringstream cmd;
-	cmd << "ffmpeg "           ;
-        cmd << "-y "               ;
-        cmd << "-hide_banner "     ;
-        cmd << "-f rawvideo "      ;
-        cmd << "-pix_fmt rgb24 "   ;
-        cmd << "-s:v 720x480 "     ;
-        cmd << "-r 60 "            ;
-        cmd << "-i - "             ;
-        cmd << "-pix_fmt yuv420p " ;  // to render with Quicktime
-        cmd << "-vcodec mpeg4 "    ;
-        cmd << "-an "              ;  // no audio
-        cmd << "-q:v 5 "           ;  // quality level; 1 <= q <= 32
-        cmd << "output.mp4"        ;
+	const char * cmd = 
+		"ffmpeg           "
+		"-y               "
+		"-hide_banner     "
+		"-f rawvideo      " // input to be raw video data
+		"-pix_fmt rgb24   "
+		"-s:v 720x480     "
+		"-r 60            " // frames per second
+		"-i -             " // read data from the standard input stream
+		"-pix_fmt yuv420p " // to render with Quicktime
+		"-vcodec mpeg4    "
+		"-an              " // no audio
+		"-q:v 5           " // quality level; 1 <= q <= 32
+		"output.mp4       ";
 
-	FILE * pipe = popen(cmd.str().c_str(), "w");
+	FILE * pipe = popen(cmd, "w");
 
 	int num_frames = duration_in_seconds * frames_per_second;
 
