@@ -22,7 +22,7 @@ const int duration_in_seconds = 3;
 
 unsigned char frame[H][W][3];
 
-void clear_frame() { memset(frame, 1, sizeof(frame)); }
+void clear_frame() { memset(frame, 0, sizeof(frame)); }
 void draw_rect(int x, int y, int w, int h, byte r, byte g, byte b);
 
 void draw_frame(double t) {
