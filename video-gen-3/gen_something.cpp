@@ -20,7 +20,7 @@ using namespace std;
 const double frames_per_second = 30;
 const int duration_in_seconds = 15;
 
-unsigned char ascii[1000][756][3];
+unsigned char ascii[2000][1512][3];
 unsigned char frame[H][W][3];
 
 void clear_frame() { memset(frame, 1, sizeof(frame)); }
@@ -29,7 +29,7 @@ void draw_ascii(char c, int x, int y, byte r, byte g, byte b);
 
 void draw_frame(double t) {
 	clear_frame();
-	draw_ascii('a', 200, 200, 0xFF, 0xFF, 0xFF);
+	draw_ascii('a', 0, 0, 0xFF, 0x00, 0xFF);
 	const double pps = 50; // pixels per second
 	draw_rect(0 + t * pps, 0 + t * pps, 10, 10, 0x00, 0xff, 0x00);
 	draw_rect(0 + W - pps * t, 0 + H - pps * t, 10, 10, 0xff, 0x00, 0x00);
@@ -43,26 +43,21 @@ void load_ascii() {
 		"ffmpeg "
 		"-y "
 		"-hide_banner "
+		"-pattern_type none "
 		"-i ascii-2000x1512.png "
-		"-video_size 1000x756 "
-		"-pix_fmt rgb24 "
 		"-f rawvideo "
+		"-video_size 2000x1512 "
+		//"-video_size 1000x756 "
+		"-pix_fmt rgb24 "
 		"- ";
 
 	FILE * ascii_pipe = popen(cmd, "r");
 
-	int i = 0;
-	while (true) {
-		int count = fread(ascii + i, 1, 1000 * 756 * 3 - i, ascii_pipe);
-cout << "******************* " << count << endl;
-		if (count == 0) {
-			if (i != 1000 * 756 * 3) {
-				cout << "ERROR.  Unexpected ascii file size of " << i << endl;
-				exit(1);
-			}
-			break;
-		}
-	} 
+	int count = fread(ascii, 3, 2000 * 1512, ascii_pipe);
+	if (count != 2000 * 1512) {
+		cout << "ERROR.  Unexpected ascii file size of " << count << endl;
+		exit(1);
+	}
 
 	fflush(ascii_pipe);
 	pclose(ascii_pipe);
@@ -93,16 +88,16 @@ void draw_rect(int x, int y, int w, int h, byte r, byte g, byte b) {
 
 void draw_ascii(char c, int x, int y, byte r, byte g, byte b) {
 	int x0 = x;
-	int x1 = x + 100;
+	int x1 = x + 400;
 	int y0 = y;
-	int y1 = y + 100;
+	int y1 = y + 400;
 	clamp(&x0, &y0);
 	clamp(&x1, &y1);
 	for (int y = y0; y < y1; ++y) {
 		for (int x = x0; x < x1; ++x) {
-			frame[y][x][0] = ascii[140 + y][90 + x][0];
-			frame[y][x][1] = ascii[140 + y][90 + x][1];
-			frame[y][x][2] = ascii[140 + y][90 + x][2];
+			frame[y][x][0] = ascii[0 + y][0 + x][0];
+			frame[y][x][1] = ascii[0 + y][0 + x][1];
+			frame[y][x][2] = ascii[0 + y][0 + x][2];
 		}
 	}
 }
@@ -110,22 +105,22 @@ void draw_ascii(char c, int x, int y, byte r, byte g, byte b) {
 int main(int argc, char * argv[]) {
 	load_ascii();
 
-	stringstream cmd;
-	cmd << "ffmpeg "           ;
-        cmd << "-y "               ;
-        cmd << "-hide_banner "     ;
-        cmd << "-f rawvideo "      ;
-        cmd << "-pix_fmt rgb24 "   ;
-        cmd << "-s:v 720x480 "     ;
-        cmd << "-r 60 "            ;
-        cmd << "-i - "             ;
-        cmd << "-pix_fmt yuv420p " ;  // to render with Quicktime
-        cmd << "-vcodec mpeg4 "    ;
-        cmd << "-an "              ;  // no audio
-        cmd << "-q:v 5 "           ;  // quality level; 1 <= q <= 32
-        cmd << "output.mp4"        ;
+	const char * cmd = 
+		"ffmpeg           "
+		"-y               "
+		"-hide_banner     "
+		"-f rawvideo      " // input to be raw video data
+		"-pix_fmt rgb24   "
+		"-s:v 720x480     "
+		"-r 60            " // frames per second
+		"-i -             " // read data from the standard input stream
+		"-pix_fmt yuv420p " // to render with Quicktime
+		"-vcodec mpeg4    "
+		"-an              " // no audio
+		"-q:v 5           " // quality level; 1 <= q <= 32
+		"output.mp4       ";
 
-	FILE * pipe = popen(cmd.str().c_str(), "w");
+	FILE * pipe = popen(cmd, "w");
 
 	int num_frames = duration_in_seconds * frames_per_second;
 

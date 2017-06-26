@@ -1,6 +1,7 @@
 a.out
 *.wav
 *.mov
+*.mp3
 *.mp4
 .DS_Store
 /video-gen-2/html
