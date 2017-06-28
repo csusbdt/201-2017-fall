@@ -69,7 +69,7 @@ int main(int argc, char * argv[]) {
 		"-q:v 5           " // quality level; 1 <= q <= 32
 		"output.mp4       ";
 
-	FILE * pipe = popen(cmd, "w");
+	FILE * pipe = popen(cmd, "wb");
 
 	int num_frames = duration_in_seconds * frames_per_second;
 
