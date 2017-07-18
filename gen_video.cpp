@@ -33,11 +33,12 @@ void draw_frame(double t) {
 
 // Constrain point to frame.
 void clamp(int * x, int * y) {
-	if (*x < 0) *x = 0; else if (*x > W) *x = W;
-	if (*y < 0) *y = 0; else if (*y > H) *y = H;
+	if (*x < 0) *x = 0; else if (*x >= W) *x = W - 1;
+	if (*y < 0) *y = 0; else if (*y >= H) *y = H - 1;
 }
 
 void draw_rect(int x, int y, int w, int h, byte r, byte g, byte b) {
+	clamp(&x, &y);
 	int x0 = x;
 	int x1 = x + w;
 	int y0 = y;
@@ -55,21 +56,24 @@ void draw_rect(int x, int y, int w, int h, byte r, byte g, byte b) {
 
 int main(int argc, char * argv[]) {
 	const char * cmd = 
-		"ffmpeg           "
-		"-y               "
-		"-hide_banner     "
-		"-f rawvideo      " // input to be raw video data
-		"-pix_fmt rgb24   "
-		"-s:v 720x480     "
-		"-r 60            " // frames per second
-		"-i -             " // read data from the standard input stream
-		"-pix_fmt yuv420p " // to render with Quicktime
-		"-vcodec mpeg4    "
-		"-an              " // no audio
-		"-q:v 5           " // quality level; 1 <= q <= 32
-		"output.mp4       ";
+		"ffmpeg              "
+		"-y                  "
+		"-hide_banner        "
+		"-f rawvideo         " // input to be raw video data
+		"-pixel_format rgb24 "
+		"-video_size 720x480 "
+		"-r 60               " // frames per second
+		"-i -                " // read data from the standard input stream
+		"-pix_fmt yuv420p    " // to render with Quicktime
+		"-vcodec mpeg4       "
+		"-an                 " // no audio
+		"-q:v 5              " // quality level; 1 <= q <= 32
+		"output.mp4          ";
 
-	FILE * pipe = popen(cmd, "wb");
+	FILE * pipe = popen(cmd, "w");
+	if (pipe == 0) {
+		cout << "err = " << strerror(errno) << endl;
+	}
 
 	int num_frames = duration_in_seconds * frames_per_second;
 

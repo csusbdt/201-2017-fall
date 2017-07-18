@@ -22,7 +22,8 @@ int main(int argc, char * args[]) {
 	double duration_in_seconds = 5;
 	int num_samples = samples_per_second * duration_in_seconds;
 	for (int i = 0; i < num_samples; ++i) {
-		short sample = sin(2 * PI * i / 180.0) * SHRT_MAX;
+		double t = i / (double) samples_per_second;
+		short sample = sin(t * 2 * PI * 180.0) * SHRT_MAX;
 		fwrite(reinterpret_cast<unsigned char *>(&sample), 1, 2, stdout);
 	}
 
